@@ -28,12 +28,12 @@ public class Philosopher extends Thread {
   // radius for painting
   static int radius = 50;
   // center
-  private int x, y;
+  public int x, y;
 
   // Constructor.
   // cx and cy indicate coordinates of center
   //
-  public Philosopher(Table T, int x, int y, Fork lf, Fork rf, Coordinator C) {
+  public Philosopher(Table T, int x, int y, Coordinator C) {
 
       this.random = new Random();
       this.currentState = THINK;
@@ -45,8 +45,12 @@ public class Philosopher extends Thread {
       this.c = C;
 
       this.adjList = new ArrayList<Fork>();
-      adjList.add(lf);
-      adjList.add(rf);
+
+  }
+
+  public void addEdge(Fork f) {
+
+    adjList.add(f);
 
   }
 
@@ -105,18 +109,27 @@ public class Philosopher extends Thread {
     currentState = WAIT;
     resetGraph();
 
-    adjList.get(0).acquire(x, y);
-    yield();    // you aren't allowed to remove this
-    adjList.get(1).acquire(x, y);
+    for (Fork f: this.adjList) {
+      f.acquire(this);
+      yield();
+    }
+    // adjList.get(0).acquire(this);
+    // yield();    // you aren't allowed to remove this
+    // adjList.get(1).acquire(this);
   }
 
   private void eat() throws ResetException {
     currentState = EAT;
     resetGraph();
 
-    adjList.get(0).release();
-    yield();    // you aren't allowed to remove this
-    adjList.get(1).release();
+    for (Fork f: this.adjList) {
+      f.release();
+      yield();
+    }
+    
+    // adjList.get(0).release();
+    // yield();    // you aren't allowed to remove this
+    // adjList.get(1).release();
   }
 
   public void draw(Graphics g) {

@@ -1,41 +1,40 @@
 import java.awt.*;
 
 public class Fork {
-    private Table t;
-    private static final int XSIZE = 10;
-    private static final int YSIZE = 10;
-    private int orig_x;
-    private int orig_y;
-    private int x;
-    private int y;
+
+    private Table graph;
+
+    // graphics
+    // radius for painting
+    static int radius = 10;
+    // center
+    private int x, y;
+    // original x, y
+    private int orig_x, orig_y;
 
     // Constructor.
-    // cx and cy indicate coordinates of center.
-    // Note that fillOval method expects coordinates of upper left corner
-    // of bounding box instead.
-    //
-    public Fork(Table T, int cx, int cy) {
-        t = T;
-        orig_x = cx;
-        orig_y = cy;
-        x = cx;
-        y = cy;
+    public Fork(Table T, int x, int y) {
+        graph = T;
+        orig_x = x;
+        orig_y = y;
+        this.x = x;
+        this.y = y;
     }
 
     public void reset() {
         clear();
         x = orig_x;
         y = orig_y;
-        t.repaint();
+        resetGraph();
     }
 
     // arguments are coordinates of acquiring philosopher's center
     //
-    public void acquire(int px, int py) {
+    public void acquire(Philosopher p) {
         clear();
-        x = (orig_x + px)/2;
-        y = (orig_y + py)/2;
-        t.repaint();
+        x = (orig_x + p.x)/2;
+        y = (orig_y + p.y)/2;
+        resetGraph();
     }
 
     public void release() {
@@ -46,14 +45,18 @@ public class Fork {
     //
     public void draw(Graphics g) {
         g.setColor(Color.black);
-        g.fillOval(x-XSIZE/2, y-YSIZE/2, XSIZE, YSIZE);
+        g.fillOval(x-radius/2, y-radius/2, radius, radius);
     }
 
     // erase self
     //
     private void clear() {
-        Graphics g = t.getGraphics();
-        g.setColor(t.getBackground());
-        g.fillOval(x-XSIZE/2, y-YSIZE/2, XSIZE, YSIZE);
+        Graphics g = graph.getGraphics();
+        g.setColor(graph.getBackground());
+        g.fillOval(x-radius/2, y-radius/2, radius, radius);
+    }
+
+    public void resetGraph() {
+      graph.repaint();
     }
 }

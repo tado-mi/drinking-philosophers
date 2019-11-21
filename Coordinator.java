@@ -32,15 +32,15 @@ class Coordinator {
     //
     public synchronized boolean gate() throws ResetException {
         if (state == State.PAUSED || state == State.RESET) {
-            try {
-                wait();
-            } catch(InterruptedException e) {
-                if (isReset()) {
-                    throw new ResetException();
-                }
+          try {
+            wait();
+          } catch(InterruptedException e) {
+            if (isReset()) {
+              throw new ResetException();
             }
-            return true;        // waited
+          }
+          return true; // waited
         }
-        return false;           // didn't wait
+        return false; // didn't wait
     }
 }
