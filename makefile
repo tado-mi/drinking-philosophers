@@ -14,7 +14,13 @@ CD = cd
 
 # macro for each java source file
 CLASSES = \
-	Dining.java \
+	ResetException.java \
+	Fork.java \
+	Philosopher.java \
+	Table.java \
+	Coordinator.java \
+	UI.java \
+	Demo.java \
 	Test.java
 
 # default target definition
@@ -23,7 +29,7 @@ default: classes
 classes: $(CLASSES:.java=.class)
 
 run:
-	$(CD) bin && java Test
+	$(CD) bin && java Demo
 
 clean:
-	$(RM) *.class
+	$(RM) bin/*.class
