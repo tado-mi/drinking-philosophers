@@ -31,8 +31,21 @@ There is an included `makefile`.
   make
   make run
 
-## Extra credit
+## Extra credit 1
+Implement alternative anti-deadlock strategies.  Consider both deadlock prevention (designing the program so it never gets into a deadlock situation) and deadlock recovery (detecting deadlock and breaking it).
 
-* Will implement better graphics.
+## Extra credit 2
+Explore generalizations of the dining problem: [Drinking Philosophers](https://www.cs.utexas.edu/users/misra/scannedPdf.dir/DrinkingPhil.pdf).
 
-* Will implement [Drinking Philosophers](https://www.cs.utexas.edu/users/misra/scannedPdf.dir/DrinkingPhil.pdf) and demonstrate on a general Directed Graph.
+## Extra credit 3 [DONE]
+Draw prettier graphics.
+* Photos of some famous philosophers instead of blobs
+* Scale-ability
+* Colored messages of the state
+
+## Extra credit 4
+(Ambitious) Implement a transactional memory system that allows you to write simply
+txBegin();
+    // grab forks
+txEnd();
+and trust that the underlying implementation makes the code in the middle atomic while simultaneously avoiding deadlock and maximizing concurrency.  Your implementation will need to employ some sort of speculation.  See, for example, the DSTM system of Herlihy, Luchangco, Moir, and Scherer.

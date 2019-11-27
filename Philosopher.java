@@ -8,6 +8,11 @@ public class Philosopher extends Thread {
 
   // states
   static final int THINK = 0, WAIT = 1, EAT = 2;
+  static final String[] stringSet = {
+    "thinking", // thinking state
+    "waiting", // waiting state
+    "eating" // eating state
+  };
   // time options
   static final double time[] = {
     4.0, // think time
@@ -26,8 +31,6 @@ public class Philosopher extends Thread {
   private Table graph;
 
   // graphics
-  // radius for painting
-  static int radius = 50;
   // center
   public int x, y;
 
@@ -52,12 +55,6 @@ public class Philosopher extends Thread {
   }
 
   public String toString() {
-
-    String[] stringSet = {
-      "thinking", // thinking state
-      "waiting", // waiting state
-      "eating" // eating state
-    };
 
     return "Philosopher " + index + " is " + stringSet[currentState] + ".";
 
@@ -162,14 +159,37 @@ public class Philosopher extends Thread {
 
   }
 
+  public void set(int x, int y) {
+    this.x = x;
+    this.y = y;
+  }
+
   public void draw(Graphics g) {
+
+    // radius for painting
+    int radius = Math.min(graph.getWidth() / 4, 400);
+
+    int x = this.x - radius/2;
+    int y = this.y - radius/2;
+
+    Image img = Toolkit.getDefaultToolkit().getImage("../img/" + index + ".jpg");
+    int w = img.getWidth(null);
+    int h = img.getHeight(null);
+
+    double scale = (1.0 * radius) / w;
+
+    g.drawImage(img, x, y, (int) (scale * w), (int) (scale * h), graph);
+
     Color[] colorSet = {
-      Color.blue, // thinking state
-      Color.red, // waiting state
-      Color.green // eating state
+      new Color(0, 100, 255), // thinking state
+      new Color(255, 0, 100), // waiting state
+      new Color(0, 255, 100)  // eating state
     };
     g.setColor(colorSet[currentState]);
-    g.fillOval(x-radius/2, y-radius/2, radius, radius);
+    g.fillOval(x - 7, y - 7, radius/5, radius/5);
+
+    // g.setColor(new Color(0, 0, 0));
+    g.drawString(stringSet[currentState], x - 5, y - 5);
   }
 
   private void resetGraph() {
@@ -182,4 +202,3 @@ public class Philosopher extends Thread {
   }
 
 }
-

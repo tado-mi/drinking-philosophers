@@ -17,6 +17,7 @@ public class Table extends JPanel {
     // The origin is the upper left corner of the frame.
     //
     public Table(Coordinator C, int s) {
+
       c = C;
 
       setPreferredSize(new Dimension(s, s));
@@ -38,6 +39,22 @@ public class Table extends JPanel {
         V[i].addEdge(forks[i]);
         V[i].addEdge(forks[(i+1) % n]);
         V[i].start();
+      }
+    }
+
+    public void updateCoordinates(int s) {
+      for (int i = 0; i < n; i++) {
+        double angle = Math.PI/2 + 2*Math.PI/n*(i-0.5);
+        double x = s/2.0 + s/6.0 * Math.cos(angle);
+        double y = s/2.0 - s/6.0 * Math.sin(angle);
+        forks[i].set((int) x, (int) y);
+      }
+
+      for (int i = 0; i < n; i++) {
+        double angle = Math.PI/2 + 2*Math.PI/n*i;
+        double x = s/2.0 + s/3.0 * Math.cos(angle);
+        double y = s/2.0 - s/3.0 * Math.sin(angle);
+        V[i].set((int) x, (int) y);
       }
     }
 
@@ -65,14 +82,16 @@ public class Table extends JPanel {
     public void paintComponent(Graphics g) {
 
       super.paintComponent(g);
+      int s = Math.min(getWidth() - 1, getHeight() - 1);
+      updateCoordinates(s);
 
       for (int i = 0; i < n; i++) {
-        forks[i].draw(g);
         V[i].draw(g);
+        forks[i].draw(g);
       }
 
       g.setColor(Color.black);
-      g.drawRect(0, 0, getWidth()-1, getHeight()-1);
+      g.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
 
     }
 

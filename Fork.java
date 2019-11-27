@@ -13,6 +13,7 @@ public class Fork {
     private int orig_x, orig_y;
 
     private boolean locked;
+    private Philosopher owner;
 
     // Constructor.
     public Fork(Table T, int x, int y) {
@@ -22,6 +23,7 @@ public class Fork {
         this.x = x;
         this.y = y;
         this.locked = false;
+        this.owner = null;
     }
 
     public void lock() {
@@ -30,6 +32,7 @@ public class Fork {
 
     public void unlock() {
       locked = false;
+      owner = null;
     }
 
     public boolean isLocked() {
@@ -37,7 +40,7 @@ public class Fork {
     }
 
     public boolean isFree() {
-      return (x == orig_x && y == orig_y);
+      return owner == null;
     }
 
     public void reset() {
@@ -53,8 +56,9 @@ public class Fork {
     public void acquire(Philosopher p) {
         lock();
         clear();
-        x = (orig_x + p.x)/2;
-        y = (orig_y + p.y)/2;
+        owner = p;
+        x = (orig_x + owner.x)/2;
+        y = (orig_y + owner.y)/2;
         resetGraph();
     }
 
@@ -62,11 +66,25 @@ public class Fork {
         reset();
     }
 
+    public void set(int x, int y) {
+      orig_x = x;
+      orig_y = y;
+      if (! isLocked()) {
+        this.x = orig_x;
+        this.y = orig_y;
+      } else {
+        x = (orig_x + owner.x)/2;
+        y = (orig_y + owner.y)/2;
+      }
+    }
+
     // render self
     //
     public void draw(Graphics g) {
-        g.setColor(Color.black);
-        g.fillOval(x-radius/2, y-radius/2, radius, radius);
+
+      g.setColor(new Color(255, 100, 0));
+      g.fillOval(x-radius/2, y-radius/2, radius, radius);
+
     }
 
     // erase self
