@@ -51,7 +51,7 @@ public class Philosopher extends Thread {
 
   }
 
-  public string toString() {
+  public String toString() {
 
     String[] stringSet = {
       "thinking", // thinking state
@@ -83,7 +83,7 @@ public class Philosopher extends Thread {
         }
       }
     }
-    fork.acquire(x, y);
+    fork.acquire(this);
   }
 
   // start method of Thread calls run;
@@ -145,7 +145,7 @@ public class Philosopher extends Thread {
     resetGraph();
 
     for (Fork f: this.adjList) {
-      take(f)
+      take(f);
       yield();
     }
 
@@ -182,3 +182,4 @@ public class Philosopher extends Thread {
   }
 
 }
+
