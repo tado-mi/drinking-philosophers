@@ -34,7 +34,7 @@ public class Table extends JPanel {
         double angle = Math.PI/2 + 2*Math.PI/n*i;
         double x = s/2.0 + s/3.0 * Math.cos(angle);
         double y = s/2.0 - s/3.0 * Math.sin(angle);
-        V[i] = new Philosopher(this, (int) x, (int) y, c);
+        V[i] = new Philosopher(this, (int) x, (int) y, c, i);
         V[i].addEdge(forks[i]);
         V[i].addEdge(forks[(i+1) % n]);
         V[i].start();

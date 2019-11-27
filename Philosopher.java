@@ -20,6 +20,7 @@ public class Philosopher extends Thread {
 
   // own state
   private int currentState;
+  private int index;
 
   private Coordinator c;
   private Table graph;
@@ -32,11 +33,12 @@ public class Philosopher extends Thread {
 
   // Constructor.
   // cx and cy indicate coordinates of center
-  //
-  public Philosopher(Table T, int x, int y, Coordinator C) {
+  public Philosopher(Table T, int x, int y, Coordinator C, int index) {
 
       this.random = new Random();
       this.currentState = THINK;
+
+      this.index = index;
 
       this.graph = T;
       this.x = x;
@@ -46,6 +48,23 @@ public class Philosopher extends Thread {
 
       this.adjList = new ArrayList<Fork>();
 
+
+  }
+
+  public string toString() {
+
+    String[] stringSet = {
+      "thinking", // thinking state
+      "waiting", // waiting state
+      "eating" // eating state
+    };
+
+    return "Philosopher " + index + " is " + stringSet[currentState] + ".";
+
+  }
+
+  public void print() {
+    System.out.println(toString());
   }
 
   public void addEdge(Fork f) {
@@ -54,20 +73,36 @@ public class Philosopher extends Thread {
 
   }
 
+  private synchronized void take(Fork fork) throws ResetException {
+    while(fork.isLocked()) {
+      try {
+        sleep(1000);
+      } catch (InterruptedException e) {
+        if(c.isReset()) {
+          throw new ResetException();
+        }
+      }
+    }
+    fork.acquire(x, y);
+  }
+
   // start method of Thread calls run;
   public void run() {
     for (;;) {
       try {
-        if (c.gate()) delay(time[EAT]/2.0);
 
+        if (c.gate()) delay(time[EAT]/2.0);
         think();
+        print();
 
         if (c.gate()) delay(time[THINK]/2.0);
-
         waitFor();
+        print();
 
         if (c.gate()) delay(time[WAIT]/2.0);
         eat();
+        print();
+
       } catch(ResetException e) {
           currentState = THINK;
           resetGraph();
@@ -110,12 +145,10 @@ public class Philosopher extends Thread {
     resetGraph();
 
     for (Fork f: this.adjList) {
-      f.acquire(this);
+      take(f)
       yield();
     }
-    // adjList.get(0).acquire(this);
-    // yield();    // you aren't allowed to remove this
-    // adjList.get(1).acquire(this);
+
   }
 
   private void eat() throws ResetException {
@@ -126,10 +159,7 @@ public class Philosopher extends Thread {
       f.release();
       yield();
     }
-    
-    // adjList.get(0).release();
-    // yield();    // you aren't allowed to remove this
-    // adjList.get(1).release();
+
   }
 
   public void draw(Graphics g) {

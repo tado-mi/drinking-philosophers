@@ -12,6 +12,8 @@ public class Fork {
     // original x, y
     private int orig_x, orig_y;
 
+    private boolean locked;
+
     // Constructor.
     public Fork(Table T, int x, int y) {
         graph = T;
@@ -19,9 +21,27 @@ public class Fork {
         orig_y = y;
         this.x = x;
         this.y = y;
+        this.locked = false;
+    }
+
+    public void lock() {
+      locked = true;
+    }
+
+    public void unlock() {
+      locked = false;
+    }
+
+    public boolean isLocked() {
+      return locked;
+    }
+
+    public boolean isFree() {
+      return (x == orig_x && y == orig_y);
     }
 
     public void reset() {
+        this.unlock();
         clear();
         x = orig_x;
         y = orig_y;
@@ -31,6 +51,7 @@ public class Fork {
     // arguments are coordinates of acquiring philosopher's center
     //
     public void acquire(Philosopher p) {
+        lock();
         clear();
         x = (orig_x + p.x)/2;
         y = (orig_y + p.y)/2;
