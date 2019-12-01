@@ -11,7 +11,7 @@ public class Philosopher extends Thread {
     "waiting", // waiting state
     "eating" // eating state
   };
-  
+
   // time options
   static final double time[] = {
     4.0, // think time
@@ -195,11 +195,10 @@ public class Philosopher extends Thread {
 
     if (showPhoto) { // draw photo
 
-      String ext = index == 4? ".png" : ".jpg";
-      imgFilename = "../img/" + index + ext;
+      imgFilename = "../img/photo/" + index + ".jpg";
 
       // width of photo
-      int width = Math.min(graph.getWidth() / 4, 200);
+      int width = Math.min(graph.getWidth() / 4, 150);
 
       x = x - width/2;
       y = y - width/2;
@@ -224,10 +223,19 @@ public class Philosopher extends Thread {
     // draw state
     imgFilename = "../img/" + stringSet[currentState] + ".png";
     img = Toolkit.getDefaultToolkit().getImage(imgFilename);
+    int w = img.getWidth(null);
+    int h = img.getHeight(null);
 
-    g.drawImage(img, x, y, 70, 70, graph);
-    x = x + 80;
-    y = y + 20;
+    double scale = 90.0 / w;
+    w = (int) (scale * w);
+    h = (int) (scale * h);
+
+    x = x - w / 3;
+    y = y - h / 3;
+
+    g.drawImage(img, x, y, w, h, graph);
+    x = x + w / 4;
+    y = y + h + 15;
     g.setColor(new Color(0, 0, 0));
     g.drawString(stringSet[currentState], x, y);
 

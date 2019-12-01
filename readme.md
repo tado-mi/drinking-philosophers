@@ -1,6 +1,6 @@
 # Drinking philosophers
 
-Following is an implementation of the [Drinking Philosophers](https://www.cs.utexas.edu/users/misra/scannedPdf.dir/DrinkingPhil.pdf) problem, as a solution to the following [assignment](https://www.cs.rochester.edu/u/scott/courses/254/assignments/java.shtml). The code is made public for easier collaboration and (in future) as a sample of code. It **may not** be used for violating academic honesty policies.
+Following is an implementation of the [Drinking Philosophers](https://www.cs.utexas.edu/users/misra/scannedPdf.dir/DrinkingPhil.pdf) problem.
 
 * authors: Youssef Hussein, Lusine Keshishyan
 

@@ -52,6 +52,7 @@ public class Fork {
 
     public void reset() {
         this.unlock();
+        owner = v;
         resetGraph();
     }
 
@@ -70,7 +71,7 @@ public class Fork {
     public void draw(Graphics g) {
 
       g.setColor(new Color(0, 0, 0));
-      if (isLocked()) {
+      if (owner != null) {
         g.setColor(owner.getColor());
       }
 

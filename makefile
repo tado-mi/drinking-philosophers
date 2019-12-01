@@ -28,13 +28,13 @@ default: classes
 classes: $(CLASSES:.java=.class)
 
 dine-photo:
-	$(CD) bin && java Demo '../Dining Philosophers.txt' -photo
+	$(CD) bin && java Demo '../test/Dining Philosophers.txt' -photo
 
 dine:
-	$(CD) bin && java Demo '../Dining Philosophers.txt'
+	$(CD) bin && java Demo '../test/Dining Philosophers.txt'
 
 drink:
-	$(CD) bin && java Demo '../Drinking Philosophers.txt'
+	$(CD) bin && java Demo '../test/Drinking Philosophers.txt'
 
 clean:
 	$(RM) bin/*.class

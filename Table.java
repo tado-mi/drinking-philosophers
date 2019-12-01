@@ -22,9 +22,9 @@ public class Table extends JPanel {
 
     c = C;
     // initial size
-    int s = 400;
+    int s = 700;
 
-    setPreferredSize(new Dimension(s, s));
+    setPreferredSize(new Dimension(s + 50, s));
 
     try {
 
