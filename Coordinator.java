@@ -5,6 +5,7 @@
 class Coordinator {
     public enum State { PAUSED, RUNNING, RESET }
     private State state = State.PAUSED;
+    public double delayFactor = 1;
 
     public synchronized boolean isPaused() {
         return (state == State.PAUSED);

@@ -70,7 +70,7 @@ public class Fork {
     public void draw(Graphics g) {
 
       g.setColor(new Color(0, 0, 0));
-      if (owner != null) {
+      if (isLocked()) {
         g.setColor(owner.getColor());
       }
 

@@ -15,6 +15,8 @@ public class Table extends JPanel {
   private Fork[] E;
   private Philosopher[] V;
 
+  public Color[] colorSet;
+
   // General case, with filename containing the graph
   public Table(Coordinator C, String filename) {
 
@@ -30,7 +32,10 @@ public class Table extends JPanel {
       // first line = `n m`
       String str = scanner.nextLine();
       String[] arr = str.split(" ");
+
       n = Integer.parseInt(arr[0]);
+      setColors();
+
       V = new Philosopher[n];
       for (int i = 0; i < n; i = i + 1) {
         V[i] = new Philosopher(this, c, i);
@@ -76,7 +81,7 @@ public class Table extends JPanel {
   // Note that angles are measured in radians, not degrees.
   // The origin is the upper left corner of the frame.
   //
-  public void calculateCoordinates(int s) {
+  private void calculateCoordinates(int s) {
 
     for (int i = 0; i < n; i++) {
 
@@ -85,6 +90,38 @@ public class Table extends JPanel {
       double y = s/2.0 - s/3.0 * Math.sin(angle);
       V[i].set((int) x, (int) y);
 
+    }
+
+  }
+
+  private void setColors() {
+
+    Random random = new Random();
+    int lm = 256;
+
+    if (n > 10) { // populate with random colors
+      colorSet = new Color[n];
+      for (int i = 0; i < n; i = i + 1) {
+        int r = random.nextInt() % lm;
+        while (r < 0) r = r + lm;
+        int g = random.nextInt() % lm;
+        while (g < 0) g = g + lm;
+        int b = random.nextInt() % lm;
+        while (b < 0) b = b + lm;
+        colorSet[i] = new Color(r, g, b);
+      }
+    } else { // populate with pretty colors
+      colorSet = new Color[10];
+      colorSet[0] = new Color(255, 155, 155);
+      colorSet[1] = new Color(255, 200, 155);
+      colorSet[2] = new Color(205, 255, 155);
+      colorSet[3] = new Color(150, 205, 255);
+      colorSet[4] = new Color(155, 255, 255);
+      colorSet[5] = new Color(255, 150, 200);
+      colorSet[6] = new Color(200, 150, 255);
+      colorSet[7] = new Color(150, 205, 255);
+      colorSet[8] = new Color(155, 255, 205);
+      colorSet[9] = new Color(255, 255, 150);
     }
 
   }
@@ -127,6 +164,5 @@ public class Table extends JPanel {
     g.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
 
   }
-
 
 }

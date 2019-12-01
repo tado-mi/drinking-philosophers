@@ -4,8 +4,6 @@ import java.lang.Thread.*;
 
 public class Philosopher extends Thread {
 
-  private Random random;
-
   // states
   static final int THINK = 0, WAIT = 1, EAT = 2;
   static final String[] stringSet = {
@@ -33,32 +31,20 @@ public class Philosopher extends Thread {
   // graphics
   // center
   public int x, y;
-  public Color color;
 
   // Constructor.
   // cx and cy indicate coordinates of center
   public Philosopher(Table table, Coordinator C, int index) {
 
-    this.random = new Random();
     this.currentState = THINK;
 
     // for printing
     this.index = index;
-
-    this.graph = table;
-
-    this.c = C;
-
     this.adjList = new ArrayList<Fork>();
 
-    int lm = 256;
-    int r = random.nextInt() % lm;
-    while (r < 0) r = r + lm;
-    int g = random.nextInt() % lm;
-    while (g < 0) g = g + lm;
-    int b = random.nextInt() % lm;
-    while (b < 0) b = b + lm;
-    this.color = new Color(r, g, b);
+    this.graph = table;
+    this.c = C;
+
 
   }
 
@@ -67,7 +53,7 @@ public class Philosopher extends Thread {
   }
 
   public Color getColor() {
-    return this.color;
+    return graph.colorSet[index];
   }
 
   public void print() {
@@ -75,13 +61,10 @@ public class Philosopher extends Thread {
   }
 
   public void addEdge(Fork f) {
-
     adjList.add(f);
-
   }
 
   private synchronized void take(Fork fork) throws ResetException {
-
     while(fork.isLocked()) {
       try {
         sleep(1000);
@@ -91,15 +74,14 @@ public class Philosopher extends Thread {
         }
       }
     }
-
     fork.acquire(this);
-
   }
 
   // start method of Thread calls run;
   public void run() {
 
     for (;;) {
+
       try {
 
         if (c.gate()) delay(time[EAT]/2.0);
@@ -120,6 +102,7 @@ public class Philosopher extends Thread {
         resetGraph();
 
       }
+
     }
 
   }
@@ -193,32 +176,36 @@ public class Philosopher extends Thread {
     Image img; String imgFilename;
     int x = this.x, y = this.y;
 
-    // draw photo
-    String ext = index == 4? ".png" : ".jpg";
-    imgFilename = "../img/" + index + ext;
+    // // draw photo
+    // String ext = index == 4? ".png" : ".jpg";
+    // imgFilename = "../img/" + index + ext;
+    //
+    // // width of photo
+    // int width = Math.min(graph.getWidth() / 4, 200);
+    //
+    // x = x - width/2;
+    // y = y - width/2;
+    //
+    // img = Toolkit.getDefaultToolkit().getImage(imgFilename);
+    // int w = img.getWidth(null);
+    // int h = img.getHeight(null);
+    //
+    // double scale = (1.0 * width) / w;
+    // w = (int) (scale * w);
+    // h = (int) (scale * h);
+    // g.drawImage(img, x, y, w, h, graph);
+    // y = y + h + 3;
 
-    // width of photo
-    int width = Math.min(graph.getWidth() / 4, 200);
-
-    x = this.x - width/2;
-    y = this.y - width/2;
-
-    img = Toolkit.getDefaultToolkit().getImage(imgFilename);
-    int w = img.getWidth(null);
-    int h = img.getHeight(null);
-
-    double scale = (1.0 * width) / w;
-    w = (int) (scale * w);
-    h = (int) (scale * h);
-    g.drawImage(img, x, y, w, h, graph);
-    y = y + h + 3;
+    // draw just a blob
+    g.setColor(getColor());
+    g.fillRect(x - 10, y - 10, 20, 20);
 
     // draw state
     imgFilename = "../img/" + stringSet[currentState] + ".png";
     img = Toolkit.getDefaultToolkit().getImage(imgFilename);
 
-    g.drawImage(img, x, y, 50, 50, graph);
-    x = x + 60;
+    g.drawImage(img, x, y, 70, 70, graph);
+    x = x + 80;
     y = y + 20;
     g.setColor(new Color(0, 0, 0));
     g.drawString(stringSet[currentState], x, y);
@@ -230,7 +217,6 @@ public class Philosopher extends Thread {
     try {
       delay(time[currentState]);
     } catch (ResetException e) {
-      System.err.println("Reset exception.");
     }
   }
 
