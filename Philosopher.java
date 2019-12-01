@@ -11,6 +11,7 @@ public class Philosopher extends Thread {
     "waiting", // waiting state
     "eating" // eating state
   };
+  
   // time options
   static final double time[] = {
     4.0, // think time

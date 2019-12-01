@@ -5,6 +5,8 @@
 // Written by Michael Scott, 1997; updated 2013 to use Swing.
 // Updated again in 2019 to drop support for applets.
 //
+// Updated by Lusine Keshishyan and Youssef Hussein, 2019
+//
 
 import javax.swing.*;
 
