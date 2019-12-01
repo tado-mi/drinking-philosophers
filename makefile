@@ -20,8 +20,7 @@ CLASSES = \
 	Table.java \
 	Coordinator.java \
 	UI.java \
-	Demo.java \
-	Test.java
+	Demo.java
 
 # default target definition
 default: classes
@@ -29,7 +28,7 @@ default: classes
 classes: $(CLASSES:.java=.class)
 
 run:
-	$(CD) bin && java Demo
+	$(CD) bin && java Demo '../Dining Philosophers.txt'
 
 clean:
 	$(RM) bin/*.class

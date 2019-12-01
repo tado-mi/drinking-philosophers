@@ -1,99 +1,132 @@
 import java.awt.*;
+import java.util.*;
 import javax.swing.*;
+import java.io.*;
 
-// Graphics panel in which V and forks appear.
+// Graphics panel in which V and E appear.
 //
 public class Table extends JPanel {
-    private static final int n = 5;
 
-    // following fields are set by constructor:
-    private final Coordinator c;
-    private Fork[] forks;
-    private Philosopher[] V;
+  private int n = 5;
+  private int m = 5;
 
-    // Constructor
-    //
-    // Note that angles are measured in radians, not degrees.
-    // The origin is the upper left corner of the frame.
-    //
-    public Table(Coordinator C, int s) {
+  // following fields are set by constructor:
+  private final Coordinator c;
+  private Fork[] E;
+  private Philosopher[] V;
 
-      c = C;
+  // General case, with filename containing the graph
+  public Table(Coordinator C, String filename) {
 
-      setPreferredSize(new Dimension(s, s));
+    c = C;
+    // initial size
+    int s = 400;
 
-      forks = new Fork[n];
-      for (int i = 0; i < n; i++) {
-        double angle = Math.PI/2 + 2*Math.PI/n*(i-0.5);
-        double x = s/2.0 + s/6.0 * Math.cos(angle);
-        double y = s/2.0 - s/6.0 * Math.sin(angle);
-        forks[i] = new Fork(this, (int) x, (int) y);
-      }
+    setPreferredSize(new Dimension(s, s));
 
+    try {
+
+      Scanner scanner = new Scanner(new File(filename));
+      // first line = `n m`
+      String str = scanner.nextLine();
+      String[] arr = str.split(" ");
+      n = Integer.parseInt(arr[0]);
       V = new Philosopher[n];
-      for (int i = 0; i < n; i++) {
-        double angle = Math.PI/2 + 2*Math.PI/n*i;
-        double x = s/2.0 + s/3.0 * Math.cos(angle);
-        double y = s/2.0 - s/3.0 * Math.sin(angle);
-        V[i] = new Philosopher(this, (int) x, (int) y, c, i);
-        V[i].addEdge(forks[i]);
-        V[i].addEdge(forks[(i+1) % n]);
-        V[i].start();
+      for (int i = 0; i < n; i = i + 1) {
+        V[i] = new Philosopher(this, c, i);
       }
-    }
+      calculateCoordinates(s);
 
-    public void updateCoordinates(int s) {
-      for (int i = 0; i < n; i++) {
-        double angle = Math.PI/2 + 2*Math.PI/n*(i-0.5);
-        double x = s/2.0 + s/6.0 * Math.cos(angle);
-        double y = s/2.0 - s/6.0 * Math.sin(angle);
-        forks[i].set((int) x, (int) y);
+      m = Integer.parseInt(arr[1]);
+      E = new Fork[m];
+      for (int i = 0; i < n; i = i + 1) {
+        E[i] = new Fork(this);
       }
 
-      for (int i = 0; i < n; i++) {
-        double angle = Math.PI/2 + 2*Math.PI/n*i;
-        double x = s/2.0 + s/3.0 * Math.cos(angle);
-        double y = s/2.0 - s/3.0 * Math.sin(angle);
-        V[i].set((int) x, (int) y);
+      while (scanner.hasNext()) {
+
+        str = scanner.nextLine();
+        arr = str.split(" ");
+        if (arr[0].equals("#")) // comment
+          continue;
+
+        Fork e = E[Integer.parseInt(arr[2])];
+
+        Philosopher u = V[Integer.parseInt(arr[0])];
+        u.addEdge(e);
+        e.addVertex(u);
+
+        Philosopher v = V[Integer.parseInt(arr[1])];
+        v.addEdge(e);
+        e.addVertex(v);
+
       }
+
+      for (Philosopher p: V) {
+        p.start();
+      }
+
+    } catch (IOException e) {
+
     }
 
-    public void pause() {
-        c.pause();
-        // force V to notice change in coordinator state:
-        for (int i = 0; i < n; i++) {
-            V[i].interrupt();
-        }
+  }
+
+  //
+  // Note that angles are measured in radians, not degrees.
+  // The origin is the upper left corner of the frame.
+  //
+  public void calculateCoordinates(int s) {
+
+    for (int i = 0; i < n; i++) {
+
+      double angle = Math.PI/2 + 2*Math.PI/n*i;
+      double x = s/2.0 + s/3.0 * Math.cos(angle);
+      double y = s/2.0 - s/3.0 * Math.sin(angle);
+      V[i].set((int) x, (int) y);
+
     }
 
-    // Called by the UI when it wants to start over.
-    //
-    public void reset() {
-      c.reset();
+  }
+
+  public void pause() {
+      c.pause();
       // force V to notice change in coordinator state:
       for (int i = 0; i < n; i++) {
           V[i].interrupt();
       }
-      for (int i = 0; i < n; i++) {
-          forks[i].reset();
-      }
+  }
+
+  // Called by the UI when it wants to start over.
+  public void reset() {
+    c.reset();
+    // force V to notice change in coordinator state:
+    for (int i = 0; i < n; i++) {
+        V[i].interrupt();
+    }
+    for (int i = 0; i < n; i++) {
+        E[i].reset();
+    }
+  }
+
+  public void paintComponent(Graphics g) {
+
+    super.paintComponent(g);
+    int s = Math.min(getWidth() - 1, getHeight() - 1);
+    calculateCoordinates(s);
+
+    for (Fork f: E) {
+      f.draw(g);
     }
 
-    public void paintComponent(Graphics g) {
-
-      super.paintComponent(g);
-      int s = Math.min(getWidth() - 1, getHeight() - 1);
-      updateCoordinates(s);
-
-      for (int i = 0; i < n; i++) {
-        V[i].draw(g);
-        forks[i].draw(g);
-      }
-
-      g.setColor(Color.black);
-      g.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
-
+    for (Philosopher p: V) {
+      p.draw(g);
     }
+
+    g.setColor(Color.black);
+    g.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
+
+  }
 
 
 }

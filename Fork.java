@@ -1,29 +1,40 @@
 import java.awt.*;
+import java.awt.geom.Line2D;
+
 
 public class Fork {
 
     private Table graph;
 
-    // graphics
-    // radius for painting
-    static int radius = 10;
-    // center
-    private int x, y;
-    // original x, y
-    private int orig_x, orig_y;
-
     private boolean locked;
     private Philosopher owner;
 
+    // two philosophers that could be the owner of the "fork"
+    private Philosopher u, v;
+
     // Constructor.
-    public Fork(Table T, int x, int y) {
-        graph = T;
-        orig_x = x;
-        orig_y = y;
-        this.x = x;
-        this.y = y;
-        this.locked = false;
-        this.owner = null;
+    public Fork(Table table) {
+
+      graph = table;
+      this.locked = false;
+
+      this.owner = null;
+      this.u = null;
+      this.v = null;
+
+    }
+
+    public void addVertex(Philosopher p) {
+      if (u == null) {
+        u = p;
+      } else if (v == null) {
+        v = p;
+        // e is an edge from u to v
+        // => 'owner' of e is philosopher named v
+        owner = v;
+      } else {
+        System.out.println("Error at adding vertex");
+      }
     }
 
     public void lock() {
@@ -39,60 +50,34 @@ public class Fork {
       return locked;
     }
 
-    public boolean isFree() {
-      return owner == null;
-    }
-
     public void reset() {
         this.unlock();
-        clear();
-        x = orig_x;
-        y = orig_y;
         resetGraph();
     }
 
     // arguments are coordinates of acquiring philosopher's center
-    //
     public void acquire(Philosopher p) {
-        lock();
-        clear();
-        owner = p;
-        x = (orig_x + owner.x)/2;
-        y = (orig_y + owner.y)/2;
-        resetGraph();
+      lock();
+      owner = p;
+      resetGraph();
     }
 
     public void release() {
-        reset();
-    }
-
-    public void set(int x, int y) {
-      orig_x = x;
-      orig_y = y;
-      if (! isLocked()) {
-        this.x = orig_x;
-        this.y = orig_y;
-      } else {
-        x = (orig_x + owner.x)/2;
-        y = (orig_y + owner.y)/2;
-      }
+      reset();
     }
 
     // render self
-    //
     public void draw(Graphics g) {
 
-      g.setColor(new Color(255, 100, 0));
-      g.fillOval(x-radius/2, y-radius/2, radius, radius);
+      g.setColor(new Color(0, 0, 0));
+      if (owner != null) {
+        g.setColor(owner.getColor());
+      }
 
-    }
+      Graphics2D g2 = (Graphics2D) g;
+      g2.setStroke(new BasicStroke(5));
+      g2.draw(new Line2D.Float(u.x, u.y, v.x, v.y));
 
-    // erase self
-    //
-    private void clear() {
-        Graphics g = graph.getGraphics();
-        g.setColor(graph.getBackground());
-        g.fillOval(x-radius/2, y-radius/2, radius, radius);
     }
 
     public void resetGraph() {

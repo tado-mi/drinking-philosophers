@@ -33,31 +33,41 @@ public class Philosopher extends Thread {
   // graphics
   // center
   public int x, y;
+  public Color color;
 
   // Constructor.
   // cx and cy indicate coordinates of center
-  public Philosopher(Table T, int x, int y, Coordinator C, int index) {
+  public Philosopher(Table table, Coordinator C, int index) {
 
-      this.random = new Random();
-      this.currentState = THINK;
+    this.random = new Random();
+    this.currentState = THINK;
 
-      this.index = index;
+    // for printing
+    this.index = index;
 
-      this.graph = T;
-      this.x = x;
-      this.y = y;
+    this.graph = table;
 
-      this.c = C;
+    this.c = C;
 
-      this.adjList = new ArrayList<Fork>();
+    this.adjList = new ArrayList<Fork>();
 
+    int lm = 256;
+    int r = random.nextInt() % lm;
+    while (r < 0) r = r + lm;
+    int g = random.nextInt() % lm;
+    while (g < 0) g = g + lm;
+    int b = random.nextInt() % lm;
+    while (b < 0) b = b + lm;
+    this.color = new Color(r, g, b);
 
   }
 
   public String toString() {
-
     return "Philosopher " + index + " is " + stringSet[currentState] + ".";
+  }
 
+  public Color getColor() {
+    return this.color;
   }
 
   public void print() {
@@ -71,6 +81,7 @@ public class Philosopher extends Thread {
   }
 
   private synchronized void take(Fork fork) throws ResetException {
+
     while(fork.isLocked()) {
       try {
         sleep(1000);
@@ -80,11 +91,14 @@ public class Philosopher extends Thread {
         }
       }
     }
+
     fork.acquire(this);
+
   }
 
   // start method of Thread calls run;
   public void run() {
+
     for (;;) {
       try {
 
@@ -101,46 +115,54 @@ public class Philosopher extends Thread {
         print();
 
       } catch(ResetException e) {
-          currentState = THINK;
-          resetGraph();
+
+        currentState = THINK;
+        resetGraph();
+
+      }
+    }
+
+  }
+
+  private void delay(double secs) throws ResetException {
+
+    Random random = new Random();
+
+    double FUDGE = 0.2;
+    double ms = 1000 * secs;
+    int window = (int) (2.0 * ms * FUDGE);
+    int add_in = random.nextInt() % window;
+    int original_duration = (int) ((1.0-FUDGE) * ms + add_in);
+    int duration = original_duration;
+
+    for (;;) {
+      try {
+        Thread.sleep(duration);
+        return;
+      } catch(InterruptedException e) {
+        if (c.isReset()) {
+          throw new ResetException();
+        } else {        // suspended
+          c.gate();   // wait until resumed
+          duration = original_duration / 2;
+          // don't wake up instantly; sleep for about half
+          // as long as originally instructed
+        }
       }
     }
   }
 
-  private void delay(double secs) throws ResetException {
-      double FUDGE = 0.2;
-      double ms = 1000 * secs;
-      int window = (int) (2.0 * ms * FUDGE);
-      int add_in = random.nextInt() % window;
-      int original_duration = (int) ((1.0-FUDGE) * ms + add_in);
-      int duration = original_duration;
-
-      for (;;) {
-          try {
-              Thread.sleep(duration);
-              return;
-          } catch(InterruptedException e) {
-              if (c.isReset()) {
-                  throw new ResetException();
-              } else {        // suspended
-                  c.gate();   // wait until resumed
-                  duration = original_duration / 2;
-                  // don't wake up instantly; sleep for about half
-                  // as long as originally instructed
-              }
-          }
-      }
-  }
-
   private void think() throws ResetException {
-      currentState = THINK;
-      resetGraph();
+
+    currentState = THINK;
+    resetGraph();
+
   }
 
   private void waitFor() throws ResetException {
+
     currentState = WAIT;
     resetGraph();
-
     for (Fork f: this.adjList) {
       take(f);
       yield();
@@ -149,9 +171,9 @@ public class Philosopher extends Thread {
   }
 
   private void eat() throws ResetException {
+
     currentState = EAT;
     resetGraph();
-
     for (Fork f: this.adjList) {
       f.release();
       yield();
@@ -160,36 +182,47 @@ public class Philosopher extends Thread {
   }
 
   public void set(int x, int y) {
+
     this.x = x;
     this.y = y;
+
   }
 
   public void draw(Graphics g) {
 
-    // radius for painting
-    int radius = Math.min(graph.getWidth() / 4, 400);
+    Image img; String imgFilename;
+    int x = this.x, y = this.y;
 
-    int x = this.x - radius/2;
-    int y = this.y - radius/2;
+    // draw photo
+    String ext = index == 4? ".png" : ".jpg";
+    imgFilename = "../img/" + index + ext;
 
-    Image img = Toolkit.getDefaultToolkit().getImage("../img/" + index + ".jpg");
+    // width of photo
+    int width = Math.min(graph.getWidth() / 4, 200);
+
+    x = this.x - width/2;
+    y = this.y - width/2;
+
+    img = Toolkit.getDefaultToolkit().getImage(imgFilename);
     int w = img.getWidth(null);
     int h = img.getHeight(null);
 
-    double scale = (1.0 * radius) / w;
+    double scale = (1.0 * width) / w;
+    w = (int) (scale * w);
+    h = (int) (scale * h);
+    g.drawImage(img, x, y, w, h, graph);
+    y = y + h + 3;
 
-    g.drawImage(img, x, y, (int) (scale * w), (int) (scale * h), graph);
+    // draw state
+    imgFilename = "../img/" + stringSet[currentState] + ".png";
+    img = Toolkit.getDefaultToolkit().getImage(imgFilename);
 
-    Color[] colorSet = {
-      new Color(0, 100, 255), // thinking state
-      new Color(255, 0, 100), // waiting state
-      new Color(0, 255, 100)  // eating state
-    };
-    g.setColor(colorSet[currentState]);
-    g.fillOval(x - 7, y - 7, radius/5, radius/5);
+    g.drawImage(img, x, y, 50, 50, graph);
+    x = x + 60;
+    y = y + 20;
+    g.setColor(new Color(0, 0, 0));
+    g.drawString(stringSet[currentState], x, y);
 
-    // g.setColor(new Color(0, 0, 0));
-    g.drawString(stringSet[currentState], x - 5, y - 5);
   }
 
   private void resetGraph() {
@@ -197,7 +230,7 @@ public class Philosopher extends Thread {
     try {
       delay(time[currentState]);
     } catch (ResetException e) {
-
+      System.err.println("Reset exception.");
     }
   }
 
