@@ -7,8 +7,8 @@ import java.io.*;
 //
 public class Table extends JPanel {
 
-  private int n = 5;
-  private int m = 5;
+  private int n;
+  private int m;
 
   // following fields are set by constructor:
   private final Coordinator c;
@@ -44,7 +44,7 @@ public class Table extends JPanel {
 
       m = Integer.parseInt(arr[1]);
       E = new Fork[m];
-      for (int i = 0; i < n; i = i + 1) {
+      for (int i = 0; i < m; i = i + 1) {
         E[i] = new Fork(this);
       }
 

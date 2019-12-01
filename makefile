@@ -27,8 +27,11 @@ default: classes
 
 classes: $(CLASSES:.java=.class)
 
-run:
+dine:
 	$(CD) bin && java Demo '../Dining Philosophers.txt'
+
+drink:
+	$(CD) bin && java Demo '../Drinking Philosophers.txt'
 
 clean:
 	$(RM) bin/*.class
