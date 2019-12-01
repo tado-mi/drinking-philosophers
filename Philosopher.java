@@ -31,9 +31,9 @@ public class Philosopher extends Thread {
   // graphics
   // center
   public int x, y;
+  private boolean showPhoto;
 
-  // Constructor.
-  // cx and cy indicate coordinates of center
+  // Constructor
   public Philosopher(Table table, Coordinator C, int index) {
 
     this.currentState = THINK;
@@ -45,6 +45,22 @@ public class Philosopher extends Thread {
     this.graph = table;
     this.c = C;
 
+    this.showPhoto = false;
+
+  }
+
+  public Philosopher(Table table, Coordinator C, int index, boolean showPhoto) {
+
+    this.currentState = THINK;
+
+    // for printing
+    this.index = index;
+    this.adjList = new ArrayList<Fork>();
+
+    this.graph = table;
+    this.c = C;
+
+    this.showPhoto = showPhoto;
 
   }
 
@@ -176,29 +192,33 @@ public class Philosopher extends Thread {
     Image img; String imgFilename;
     int x = this.x, y = this.y;
 
-    // // draw photo
-    // String ext = index == 4? ".png" : ".jpg";
-    // imgFilename = "../img/" + index + ext;
-    //
-    // // width of photo
-    // int width = Math.min(graph.getWidth() / 4, 200);
-    //
-    // x = x - width/2;
-    // y = y - width/2;
-    //
-    // img = Toolkit.getDefaultToolkit().getImage(imgFilename);
-    // int w = img.getWidth(null);
-    // int h = img.getHeight(null);
-    //
-    // double scale = (1.0 * width) / w;
-    // w = (int) (scale * w);
-    // h = (int) (scale * h);
-    // g.drawImage(img, x, y, w, h, graph);
-    // y = y + h + 3;
+    if (showPhoto) { // draw photo
 
-    // draw just a blob
-    g.setColor(getColor());
-    g.fillRect(x - 10, y - 10, 20, 20);
+      String ext = index == 4? ".png" : ".jpg";
+      imgFilename = "../img/" + index + ext;
+
+      // width of photo
+      int width = Math.min(graph.getWidth() / 4, 200);
+
+      x = x - width/2;
+      y = y - width/2;
+
+      img = Toolkit.getDefaultToolkit().getImage(imgFilename);
+      int w = img.getWidth(null);
+      int h = img.getHeight(null);
+
+      double scale = (1.0 * width) / w;
+      w = (int) (scale * w);
+      h = (int) (scale * h);
+      g.drawImage(img, x, y, w, h, graph);
+      y = y + h + 3;
+
+    } else { // draw just a blob
+
+      g.setColor(getColor());
+      g.fillRect(x - 10, y - 10, 20, 20);
+
+    }
 
     // draw state
     imgFilename = "../img/" + stringSet[currentState] + ".png";

@@ -27,6 +27,9 @@ default: classes
 
 classes: $(CLASSES:.java=.class)
 
+dine-photo:
+	$(CD) bin && java Demo '../Dining Philosophers.txt' -photo
+
 dine:
 	$(CD) bin && java Demo '../Dining Philosophers.txt'
 

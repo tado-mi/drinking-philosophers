@@ -15,7 +15,17 @@ public class Demo {
       final Coordinator coordinator = new Coordinator();
 
       String filename = args[0];
-      Table table = new Table(coordinator, filename);
+      Table table;
+
+      if (args.length > 1) {
+
+        table = new Table(coordinator, filename, args[1].equals("-photo"));
+
+      } else {
+
+        table = new Table(coordinator, filename, false);
+
+      }
       JFrame frame = new JFrame(filename);
 
       // arrange to call graphical setup from GUI thread

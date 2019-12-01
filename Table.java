@@ -18,7 +18,7 @@ public class Table extends JPanel {
   public Color[] colorSet;
 
   // General case, with filename containing the graph
-  public Table(Coordinator C, String filename) {
+  public Table(Coordinator C, String filename, boolean showPhoto) {
 
     c = C;
     // initial size
@@ -38,7 +38,7 @@ public class Table extends JPanel {
 
       V = new Philosopher[n];
       for (int i = 0; i < n; i = i + 1) {
-        V[i] = new Philosopher(this, c, i);
+        V[i] = new Philosopher(this, c, i, showPhoto);
       }
       calculateCoordinates(s);
 
