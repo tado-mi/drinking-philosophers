@@ -28,8 +28,8 @@ public class Demo {
         table = new Table(coordinator, filename, false);
 
       }
-      JFrame frame = new JFrame(filename);
 
+      JFrame frame = new JFrame(filename);
       // arrange to call graphical setup from GUI thread
       try {
         SwingUtilities.invokeAndWait(new Runnable() {

@@ -1,53 +1,45 @@
 # Drinking philosophers
 
-Following is an implementation of the [Drinking Philosophers](https://www.cs.utexas.edu/users/misra/scannedPdf.dir/DrinkingPhil.pdf) problem.
+Code written by [Youssef Hussein](https://github.com/youssefmohamed552) and [Lusine Keshishyan](https://github.com/tado-mi).<br/>
+<br/>
+Following is an implementation of the [Drinking Philosophers](https://www.cs.utexas.edu/users/misra/scannedPdf.dir/DrinkingPhil.pdf) problem, as a solution of the [assignment](https://www.cs.rochester.edu/u/scott/courses/254/assignments/java.shtml) for the course **CSC 254** at the University of Rochester. It is made public to demonstrate a code sample by the authors, and for learning. We trust it will not be used to violate academic honesty policies.<br/>
+<br/>
+The provided [source code](https://www.cs.rochester.edu/courses/254/fall2019/assignments/java/Dining.java) has been modified and augmented. It was broken down to separate files for each class, concurrency has been implemented, graphics have been improved and it has been generalized from **Dining philosophers** problem to **Drinking philosophers** problem.
 
-* authors: Youssef Hussein, Lusine Keshishyan
+# Files
 
-This code has six main classes:
-* **Demo**: the public, "main" class that demonstrates everything.
-* **Philosopher**: active -- extends Thread
-* **Fork**: passive
-* **Table**: manages the philosophers and forks and their physical layout.
-* **Coordinator**: provides mechanisms to suspend, resume, and reset the state of worker threads (philosophers).
-* **UI**: manages graphical layout and button presses.
+## Demo.java
 
-# Test cases
-Included are two `.txt` files. First line contains two numbers `n` and `m`, where `n` is the number of Philosophers(: vertices), and `m` is the number of all the available forks(: edges).
+The main class. Input is a terminal line argument with a filename that describes a [DAG](https://en.wikipedia.org/wiki/Directed_acyclic_graph), where vertices represent the Philosophers and edges represent their Forks. First line contains numbers `n` and `m`, where `n = |V|` and `m = |E|`. Lines starting with a `#` symbol are treated as comments and ignored in parsing.<br/>
+<br/>
+The `main` class initalizes a `Table` and putr together the GUI. It has not been modified much from the provided source code.<br/>
+<br/>
+In the current repository are included two test files:
+
 * `Dining Philosophers.txt` is the description of the classical [Dining Philosophers](https://en.wikipedia.org/wiki/Dining_philosophers_problem) problem.
 * `Drinking Philosophers.txt` is the description of a directed graph with `n = 10` and `m = 15`.
 
-# Implementation of concurrency
+## Table.java
 
-* Concurency is implemented with locks ( = a boolean variable) stored in the Forks class.
+Reads from the provided file and essentially initializes a Graph. Assigns coordinates to each vertex such that they are equally distributed across a perimeter of a circle. The logic is closely following the source code. One major difference is that instead of hardcoding the case with 5 philosophers sharing exactly one fork with their right and left neighbors, the user can input any graph.
+
+## Philosophers.java
+
+The equivalent to a `Vertex` class from theory pov. Maintains an adjacency list of Forks, representing all the forks locks on which they'd need to acquire in order to start eating.
+
+## Fork.java
+
+The equivalent to an `Edge` class from theory pov. Has an instance variable `boolean lock` to implement proper concurrency. Also maintains pointers to its current owner (which could be  `null`), and to its possible owners, `u` and `v`.
 
 # Run
-There is an included `makefile`. If `make` command doesn't work, please, make sure that the folder contains a directory named *bin*. There are four useful commands included in `makefile`:
-* `make dine-photo`: will demonstrate the Dining Philosophers problem with photos of some famous philosophers.
-* `make dine`: will demonstrate the Dining Philosophers problem with cute little squares instead of photos.
-* `make drink`: will demonstrate a general case of the Dining Philosophers problem = the Drinking Philosophers problem, with cute little squares representing Philosophers, and thick edges representing Forks.
 
-# Extra Credit
-## Challenge 1
-Implement alternative anti-deadlock strategies.  Consider both deadlock prevention (designing the program so it never gets into a deadlock situation) and deadlock recovery (detecting deadlock and breaking it).
+There is an included `makefile` for your (and our) convenience.<br/>
+<br/>
+If `make` command doesn't work, please, make sure that the folder contains a directory named *bin*. Or, if you don't mind your `.class` messing up the directory containing  `.src`, you may just run  `javac *.java` command to compile.<br/>
+<br/>
+There are four useful commands included in `makefile`:
 
-## Challenge 2
-*Explore generalizations of the dining problem: [Drinking Philosophers](https://www.cs.utexas.edu/users/misra/scannedPdf.dir/DrinkingPhil.pdf).*<br/>
-Completed. Philosophers act as vertices, and maintain an array list of forks, as an adjacency list. A philosopher doesn't start 'eating' until it possess locks on all the forks on their adjacency list. Demonstrated by the test case of `Drinking Philosophers.txt`, which contains 10 philosophers and 15 forks.<br/>
-Updated the constructor of the Table class to read from an arbitrary .txt file describing a Directed Graph, instead of hardcoding the case of Dining philosophers.
-
-## Challenge 3
-*Draw prettier graphics.*<br/>
-Completed.
-* GUI is scalable
-* states are represented with images
-* each philosopher is assigned a unique color
-* 'forks' are represented as edges between philosophers, and acquire color of the philosopher that possess it and is using it to 'drink'
-* with make command `make dine-photo`, GUI comes with photos of 5 chosen philosophers
-
-## Challenge 4
-(Ambitious) Implement a transactional memory system that allows you to write simply
-txBegin();
-    // grab forks
-txEnd();
-and trust that the underlying implementation makes the code in the middle atomic while simultaneously avoiding deadlock and maximizing concurrency.  Your implementation will need to employ some sort of speculation.  See, for example, the DSTM system of Herlihy, Luchangco, Moir, and Scherer.
+* `make dine-photo` will demonstrate the Dining Philosophers problem with photos of some famous philosophers.
+* `make dine` will demonstrate the Dining Philosophers problem with cute little squares instead of photos.
+* `make drink` will demonstrate a general case of the Dining Philosophers problem using the included test file.
+* `make clean` will remove all the `*.class` files generated at compilation with the `make` command.
